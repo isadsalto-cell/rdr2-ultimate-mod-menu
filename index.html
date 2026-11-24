@@ -302,6 +302,99 @@ function show(name){
   content.appendChild(box);
  }
 
+ if(name==="Player"){
+  const clothing={
+   "Hat":[
+    "Western Hat","Gambler's Hat","Gator Hat",
+    "Raccoon Hat","Bowler Hat","Cutter Hat"
+   ],
+   "Shirt":[
+    "Everyday Shirt","Union Shirt","Stringham Shirt",
+    "Corrales Shirt","Caugherty Shirt","Olmo Shirt"
+   ],
+   "Coat / Jacket":[
+    "Shotgun Coat","Duster Coat","Blackgrave Coat",
+    "Winter Shotgun Coat","Benbow Jacket","Porter Jacket"
+   ],
+   "Vest":[
+    "Opulent Vest","Ortega Vest","Paisley Vest"
+   ],
+   "Pants":[
+    "Bandito Pants","Martindale Pants","Buckskin Pants",
+    "Leather Pants","Worn Rolled Pants","Concho Pants"
+   ],
+   "Boots":[
+    "Sportsman's Boots","Lumber Boots","Watonga Boots",
+    "Preacher's Boots","Cavalry Boots"
+   ],
+   "Gloves":[
+    "Woodland Gloves","Furred Gloves","Urban Gloves"
+   ],
+   "Bandana":[
+    "Patterned Bandana"
+   ],
+   "Poncho":[
+    "Corchado Poncho","Guerra Poncho","Torras Poncho",
+    "Cardenas Poncho","Manstilla Poncho",
+    "Fuentes Poncho","Chuparosa Poncho","Prieto Poncho"
+   ],
+   "Neckwear":[
+    "Neckerchief","Ribbon Tie","Neat String Tie",
+    "Puff Tie"
+   ],
+   "Chaps":[
+    "Griffith Chaps","Shaffer Chaps","Pelt Half-Chaps"
+   ]
+  };
+
+  const heading=document.createElement("h3");
+  heading.textContent="CLOTHING CUSTOMIZER";
+  content.appendChild(heading);
+
+  Object.entries(clothing).forEach(([category,items])=>{
+   const row=document.createElement("div");
+   row.className="item";
+
+   const wrapper=document.createElement("div");
+   wrapper.style.width="100%";
+
+   const title=document.createElement("div");
+   title.textContent=category;
+
+   const select=document.createElement("select");
+   select.style.cssText=`
+    display:block;
+    width:100%;
+    margin-top:10px;
+    padding:11px;
+    background:#292929;
+    color:white;
+    border:1px solid #702020;
+    border-radius:5px;
+   `;
+
+   ["Default / None",...items].forEach(item=>{
+    const option=document.createElement("option");
+    option.value=item;
+    option.textContent=item;
+    select.appendChild(option);
+   });
+
+   const key="clothing_"+category;
+   select.value=settings[key]||"Default / None";
+
+   select.onchange=()=>{
+    settings[key]=select.value;
+    saveSettings();
+   };
+
+   wrapper.appendChild(title);
+   wrapper.appendChild(select);
+   row.appendChild(wrapper);
+   content.appendChild(row);
+  });
+ }
+
  if(name==="Smoking"){
   const slider=document.createElement("div");
   slider.className="item";
