@@ -245,6 +245,63 @@ function show(name){
   content.appendChild(row);
  });
 
+ if(name==="Player"){
+  const box=document.createElement("div");
+  box.className="item";
+
+  const wrapper=document.createElement("div");
+  wrapper.style.width="100%";
+
+  wrapper.innerHTML=`
+   <div>Character Model Selector</div>
+   <small>Select your character model</small>
+  `;
+
+  const select=document.createElement("select");
+
+  select.style.cssText=`
+   width:100%;
+   margin-top:12px;
+   padding:12px;
+   background:#292929;
+   color:white;
+   border:1px solid #702020;
+   border-radius:5px;
+  `;
+
+  const characters=[
+   "Arthur Morgan",
+   "John Marston",
+   "Dutch van der Linde",
+   "Hosea Matthews",
+   "Micah Bell",
+   "Sadie Adler",
+   "Charles Smith",
+   "Javier Escuella",
+   "Bill Williamson",
+   "Random NPC",
+   "Gang Member"
+  ];
+
+  characters.forEach(character=>{
+   const option=document.createElement("option");
+   option.value=character;
+   option.textContent=character;
+   select.appendChild(option);
+  });
+
+  select.value=settings.selectedCharacter||"Arthur Morgan";
+
+  select.onchange=()=>{
+   settings.selectedCharacter=select.value;
+   saveSettings();
+  };
+
+  wrapper.appendChild(select);
+  box.appendChild(wrapper);
+  content.appendChild(box);
+ }
+
  if(name==="Smoking"){
   const slider=document.createElement("div");
   slider.className="item";
