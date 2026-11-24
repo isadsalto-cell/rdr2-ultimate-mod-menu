@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RDR2 Ultimate Menu</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;background:#090909;color:#eee;
+  font-family:Arial,sans-serif;padding:20px;
+}
+.menu{
+  max-width:430px;margin:20px auto;
+  background:#171717;border:1px solid #632323;
+  border-radius:14px;overflow:hidden;
+  box-shadow:0 0 25px #8b171733;
+}
+.header{
+  padding:22px;background:linear-gradient(120deg,#401010,#171717);
+}
+.header h2{margin:0;color:#ff5555}
+.header p{color:#aaa;font-size:12px}
+.tabs{display:flex;flex-wrap:wrap;background:#101010}
+.tab{
+  flex:1;padding:13px 8px;border:0;
+  color:#aaa;background:none;font-weight:bold;
+}
+.tab.active{color:#ff5555;border-bottom:2px solid #ff3333}
+.content{padding:16px}
+.item{
+  display:flex;justify-content:space-between;
+  align-items:center;padding:15px 10px;
+  border-bottom:1px solid #333;
+}
+.item small{display:block;color:#888;margin-top:5px}
+.switch{accent-color:#e33;width:20px;height:20px}
+.footer{text-align:center;padding:14px;color:#777;font-size:11px}
+</style>
+</head>
+<body>
+<div class="menu">
+  <div class="header">
+    <h2>RDR2 ULTIMATE</h2>
+    <p>PS4 PROJECT • CUSA03041 • v1.32</p>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="content" id="content"></div>
+  <div class="footer">UI PROTOTYPE • VERSION 1.0</div>
+</div>
+<script>
+const sections={
+ Player:["God Mode UI","Infinite Stamina UI","Health Display"],
+ Weapons:["Weapon Options","Ammo Display","Hip Fire Options","Aim Assist Options"],
+ Smoking:["Extended Smoking UI","Smoking Animation Options"],
+ Horse:["Horse Options","Horse Customization"],
+ Teleport:["Location Selector","Fast Travel UI"],
+ World:["Weather Selector","Time Control"],
+ Visual:["Camera Options","Visual Effects"],
+ Settings:["Menu Theme","Menu Information"]
+};
+const tabs=document.getElementById("tabs");
+const content=document.getElementById("content");
+
+function show(name){
+ document.querySelectorAll(".tab").forEach(b=>{
+  b.classList.toggle("active",b.textContent===name);
+ });
+ content.innerHTML="";
+ sections[name].forEach(label=>{
+  const row=document.createElement("div");
+  row.className="item";
+  row.innerHTML=`<div>${label}<small>Prototype control</small></div>
+  <input class="switch" type="checkbox" aria-label="${label}">`;
+  content.appendChild(row);
+ });
+}
+Object.keys(sections).forEach(name=>{
+ const b=document.createElement("button");
+ b.className="tab";
+ b.textContent=name;
+ b.onclick=()=>show(name);
+ tabs.appendChild(b);
+});
+show("Player");
+</script>
+</body>
+</html>
