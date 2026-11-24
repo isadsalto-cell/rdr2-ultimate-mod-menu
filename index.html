@@ -441,8 +441,117 @@ Object.keys(sections).forEach(name=>{
  tabs.appendChild(button);
 });
 
+
 loadSettings();
 show("Player");
+
+// CONTROLLER NAVIGATION
+let menuVisible = true;
+let selectedIndex = 0;
+let previous = {};
+
+function updateHighlight(){
+ const rows=content.querySelectorAll(".item");
+
+ rows.forEach((row,i)=>{
+  row.style.outline =
+   i===selectedIndex ? "2px solid #c52d2d" : "none";
+  row.style.background =
+   i===selectedIndex ? "#302020" : "#1d1d1d";
+ });
+}
+
+function changeTab(direction){
+ const buttons=[...tabs.querySelectorAll(".tab")];
+ const current=buttons.findIndex(b=>b.classList.contains("active"));
+
+ const next=(current+direction+buttons.length)%buttons.length;
+
+ buttons[next].click();
+ selectedIndex=0;
+ updateHighlight();
+}
+
+function pressItem(){
+ const rows=content.querySelectorAll(".item");
+ const row=rows[selectedIndex];
+
+ if(!row) return;
+
+ const control=row.querySelector("input,button,select");
+
+ if(!control) return;
+
+ if(control.tagName==="SELECT"){
+  control.focus();
+ }else{
+  control.click();
+ }
+}
+
+function controllerLoop(){
+ const pads=navigator.getGamepads ?
+  navigator.getGamepads() : [];
+
+ const pad=Array.from(pads).find(p=>p&&p.connected);
+
+ if(pad){
+  const b=pad.buttons;
+
+  const up=!!b[12]?.pressed;
+  const down=!!b[13]?.pressed;
+  const left=!!b[14]?.pressed;
+  const right=!!b[15]?.pressed;
+
+  const cross=!!b[0]?.pressed;
+  const circle=!!b[1]?.pressed;
+  const square=!!b[2]?.pressed;
+  const r1=!!b[5]?.pressed;
+
+  const combo=r1&&square;
+
+  if(combo&&!previous.combo){
+   menuVisible=!menuVisible;
+   document.querySelector("main").style.display=
+    menuVisible?"flex":"none";
+   document.querySelector("header").style.display=
+    menuVisible?"flex":"none";
+  }
+
+  if(menuVisible){
+   if(up&&!previous.up){
+    selectedIndex=Math.max(0,selectedIndex-1);
+    updateHighlight();
+   }
+
+   if(down&&!previous.down){
+    const count=content.querySelectorAll(".item").length;
+    selectedIndex=Math.min(count-1,selectedIndex+1);
+    updateHighlight();
+   }
+
+   if(left&&!previous.left) changeTab(-1);
+   if(right&&!previous.right) changeTab(1);
+
+   if(cross&&!previous.cross) pressItem();
+  }
+
+  if(circle&&!previous.circle){
+   menuVisible=false;
+   document.querySelector("main").style.display="none";
+   document.querySelector("header").style.display="none";
+  }
+
+  previous={up,down,left,right,cross,circle,combo};
+ }
+
+ requestAnimationFrame(controllerLoop);
+}
+
+if("getGamepads" in navigator){
+ requestAnimationFrame(controllerLoop);
+}
+
 </script>
 </body>
 </html>
