@@ -89,73 +89,79 @@ input[type=range]{accent-color:#d43b3b}
 <script>
 const sections={
  Player:[
-"God Mode",
-"Infinite Stamina",
-"Health Display",
-"Stamina Display",
-"Movement Options",
-"Player Status"
-],
+ "God Mode","Infinite Stamina","Health Display",
+ "Stamina Display","Movement Options","Player Status"
+ ],
  Weapons:[
-"Weapon Selector",
-"Ammo Display",
-"Weapon Damage",
-"Weapon Condition",
-"Weapon Customization",
-"Loadout Presets"
-],
- Smoking:["Extended Smoking","Smoking Animation","Repeat Animation"],
+ "Weapon Selector","Ammo Display","Weapon Damage",
+ "Weapon Condition","Weapon Customization","Loadout Presets"
+ ],
+ Smoking:[
+ "Extended Smoking","Smoking Animation","Repeat Animation"
+ ],
  Horse:[
-"Horse Selector",
-"Unlimited Horse Stamina",
-"Horse Health",
-"Horse Bonding",
-"Horse Speed",
-"Horse Whistle"
-],
+ "Horse Selector","Unlimited Horse Stamina","Horse Health",
+ "Horse Bonding","Horse Speed","Horse Whistle"
+ ],
  Teleport:[
-"Teleport to Valentine",
-"Teleport to Saint Denis",
-"Teleport to Blackwater",
-"Teleport to Rhodes",
-"Teleport to Strawberry",
-"Teleport to Camp",
-"Custom Coordinates"
-],
+ "Teleport to Valentine","Teleport to Saint Denis",
+ "Teleport to Blackwater","Teleport to Rhodes",
+ "Teleport to Strawberry","Teleport to Camp",
+ "Custom Coordinates"
+ ],
  World:[
-"Time Control",
-"Weather Control",
-"Clear Weather",
-"Rain",
-"Thunderstorm",
-"Snow",
-"World Time Scale",
-"Freeze World"
-],
+ "Time Control","Weather Control","Clear Weather",
+ "Rain","Thunderstorm","Snow","World Time Scale","Freeze World"
+ ],
  Visual:[
-"HUD Toggle",
-"FPS Counter",
-"Player Coordinates",
-"Map Display",
-"Waypoint Display",
-"Time Display",
-"Weather Display",
-"Performance Monitor"
-],
+ "HUD Toggle","FPS Counter","Player Coordinates",
+ "Map Display","Waypoint Display","Time Display",
+ "Weather Display","Performance Monitor"
+ ],
  Settings:[
-"Menu Theme",
-"Menu Opacity",
-"UI Scale",
-"Toggle Hotkey",
-"Save Configuration",
-"Load Configuration",
-"Reset Settings",
-"About Trainer"
-],
+ "Menu Theme","Menu Opacity","UI Scale",
+ "Toggle Hotkey","Save Configuration",
+ "Load Configuration","Reset Settings","About Trainer"
+ ]
 };
 
 const tabs=document.getElementById("tabs");
 const content=document.getElementById("content");
+
+const STORAGE_KEY="rdr2_trainer_settings";
+
+let settings={};
+let duration=10;
+
+function loadSettings(){
+ try{
+  settings=JSON.parse(
+   localStorage.getItem(STORAGE_KEY)
+  )||{};
+  duration=Number(
+   localStorage.getItem("rdr2_duration")
+  )||10;
+ }catch(e){
+  settings={};
+  duration=10;
+ }
+}
+
+function saveSettings(){
+ localStorage.setItem(
+  STORAGE_KEY,JSON.stringify(settings)
+ );
+ localStorage.setItem(
+  "rdr2_duration",duration
+ );
+}
+
+function resetSettings(){
+ settings={};
+ duration=10;
+ saveSettings();
+ show("Settings");
+}
 
 function show(name){
  document.querySelectorAll(".tab").forEach(b=>{
@@ -167,34 +173,96 @@ function show(name){
  sections[name].forEach(label=>{
   const row=document.createElement("div");
   row.className="item";
-  row.innerHTML=`
-   <div>${label}<small>Prototype setting</small></div>
-   <input class="switch" type="checkbox">
-  `;
+
+  const title=document.createElement("div");
+  title.textContent=label;
+
+  const small=document.createElement("small");
+  small.textContent="Browser prototype setting";
+  title.appendChild(small);
+
+  row.appendChild(title);
+
+  if(name==="Settings" &&
+     ["Save Configuration","Load Configuration",
+      "Reset Settings","About Trainer"].includes(label)){
+
+   const btn=document.createElement("button");
+   btn.className="action";
+   btn.textContent="Open";
+
+   btn.onclick=()=>{
+    if(label==="Save Configuration"){
+     saveSettings();
+     btn.textContent="Saved!";
+    }
+
+    if(label==="Load Configuration"){
+     loadSettings();
+     show("Settings");
+    }
+
+    if(label==="Reset Settings"){
+     resetSettings();
+    }
+
+    if(label==="About Trainer"){
+     alert("RDR2 Ultimate Trainer - PC UI Prototype");
+    }
+   };
+
+   row.appendChild(btn);
+
+  }else{
+   const toggle=document.createElement("input");
+   toggle.type="checkbox";
+   toggle.className="switch";
+
+   const key=name+"_"+label;
+   toggle.checked=!!settings[key];
+
+   toggle.onchange=()=>{
+    settings[key]=toggle.checked;
+    saveSettings();
+   };
+
+   row.appendChild(toggle);
+  }
+
   content.appendChild(row);
  });
 
  if(name==="Smoking"){
   const slider=document.createElement("div");
   slider.className="item";
+
   slider.innerHTML=`
    <div style="width:100%">
-    <div>Smoking Duration: <b id="duration">10s</b></div>
+    <div>Smoking Duration:
+     <b id="duration">${duration}s</b>
+    </div>
     <input id="durationSlider" type="range"
-    min="1" max="30" value="10" style="width:100%">
+    min="1" max="30" value="${duration}"
+    style="width:100%">
    </div>
   `;
+
   content.appendChild(slider);
 
   document.getElementById("durationSlider").oninput=e=>{
-   document.getElementById("duration").textContent=e.target.value+"s";
+   duration=Number(e.target.value);
+   document.getElementById("duration").textContent=
+    duration+"s";
+   saveSettings();
   };
  }
 
  const info=document.createElement("p");
  info.style.color="#777";
  info.style.fontSize="12px";
- info.textContent="Visual prototype only — no game connection.";
+ info.textContent=
+ "Visual prototype only — no game connection.";
+
  content.appendChild(info);
 }
 
@@ -206,6 +274,7 @@ Object.keys(sections).forEach(name=>{
  tabs.appendChild(button);
 });
 
+loadSettings();
 show("Player");
 </script>
 </body>
